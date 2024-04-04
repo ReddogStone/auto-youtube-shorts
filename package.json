@@ -1,0 +1,13 @@
+{
+	"name": "auto-youtube-shorts",
+	"version": "1.0.0",
+	"type": "module",
+	"dependencies": {
+		"@google-cloud/functions-framework": "^3.0.0",
+		"openai": "^4.32.1"
+	},
+	"scripts": {
+		"deploy": "gcloud functions deploy scrape-job-listings --region=europe-west3 --runtime=nodejs20 --memory=2GiB --source . --entry-point=scrape --trigger-topic=scrape-job-listings",
+		"deploy-jobs-ch": "gcloud functions deploy scrape-jobs-ch --region=europe-west3 --runtime=nodejs20  --memory=2GiB --source . --entry-point=scrape_jobs_ch --trigger-topic=scrape-job-listings"
+	}
+}

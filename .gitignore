@@ -128,3 +128,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# custom
+audio.mp3
+final-audio.mp3
+subtitles.srt
+output.mp4
+transcript.json
