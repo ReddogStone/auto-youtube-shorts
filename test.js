@@ -2,9 +2,12 @@ import { exec } from "child_process";
 import fs from "fs";
 import OpenAI, { toFile } from "openai";
 import { resolve } from "path";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const openai = new OpenAI({
-	apiKey: "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",
+	apiKey: process.env.OPEN_AI_KEY,
 });
 
 async function generateText() {
