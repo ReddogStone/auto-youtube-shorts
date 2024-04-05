@@ -135,3 +135,5 @@ final-audio.mp3
 subtitles.srt
 output.mp4
 transcript.json
+client_secret.json
+details.json

@@ -17,7 +17,7 @@ async function generateText() {
 		messages: [
 			{
 				role: "user",
-				content: `Generate 5 unexpected facts about job search in Europe.
+				content: `Generate 5 unusual and surprising facts about job search in Germany.
 					Your answer must be in the form of a JSON with following specification:
 					{
 						"title": string, // short clickbaity title to for a YouTube short video that will be generated from the facts
@@ -35,7 +35,7 @@ async function generateAudio(text) {
 	console.log("Generating audio...");
 	const response = await openai.audio.speech.create({
 		model: "tts-1",
-		voice: "alloy",
+		voice: "fable",
 		input: text,
 		response_format: "mp3",
 	});
@@ -140,8 +140,10 @@ function chunkSentence(sentence, words) {
 
 function chunkText(text, words) {
 	const sentences = text
+		.replace(/(\d+)\.(\d+)/g, "$1_$2")
 		.split(/\s*[.!?]\s*/)
-		.filter((sentence) => sentence.trim() !== "");
+		.filter((sentence) => sentence.trim() !== "")
+		.map((sentence) => sentence.replace(/(\d+)_(\d+)/g, "$1.$2"));
 
 	console.log("Sentences:", sentences);
 
@@ -201,7 +203,7 @@ const createVideo = (duration, videoIndex) =>
 		exec(
 			`${FFMPEG_PATH} -y -stream_loop -1 -t ${Math.round(
 				duration
-			)} -i videos/video_00${videoIndex}.mp4 -i final-audio.mp3 -map 0:v -map 1:a -vf "crop=1080:1920, subtitles=subtitles.srt:force_style='Fontname=Futura,PrimaryColour=&HF0FFF0,BackColour=&H303030,Alignment=10,Bold=-1,Fontsize=22,BorderStyle=1,Outline=2,Shadow=1':fontsdir=fonts" -y output.mp4`,
+			)} -i videos/video_00${videoIndex}.mp4 -i final-audio.mp3 -map 0:v -map 1:a -vf "crop=1080:1920, subtitles=subtitles.srt:force_style='Fontname=Futura,PrimaryColour=&H30FF30,BackColour=&H303030,Alignment=10,Bold=-1,Fontsize=22,BorderStyle=1,Outline=2,Shadow=1':fontsdir=fonts" -y output.mp4`,
 			(error, stdout, stderr) => {
 				if (error) return reject(error);
 				console.log("stdout:", stdout);
@@ -213,6 +215,10 @@ const createVideo = (duration, videoIndex) =>
 
 (async () => {
 	const { title, facts, anecdote } = await generateText();
+	await fs.promises.writeFile(
+		"details.json",
+		JSON.stringify({ title, facts, anecdote }, 0, 2)
+	);
 	console.log("Title:", title);
 	console.log("Facts:", facts);
 	console.log("Anecdote:", anecdote);
