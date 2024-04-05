@@ -8,7 +8,12 @@ import fs from "fs";
 import readline from "readline";
 import assert from "assert";
 import { google } from "googleapis";
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const OAuth2 = google.auth.OAuth2;
+
 
 // video category IDs for YouTube:
 const categoryIds = {
@@ -99,7 +104,7 @@ async function authorize(credentials) {
 	let token;
 
 	try {
-		token = await fs.promises.readFile(TOKEN_PATH);
+		token = process.env.GOOGLE_OAUTH_TOKEN;
 		oauth2Client.credentials = JSON.parse(token);
 		return oauth2Client;
 	} catch (e) {
@@ -144,8 +149,20 @@ async function getNewToken(oauth2Client) {
  * @param {Object} token The token to store to disk.
  */
 async function storeToken(token) {
-	await fs.promises.writeFile(TOKEN_PATH, JSON.stringify(token));
-	console.log("Token stored to " + TOKEN_PATH);
+	const env = await fs.promises.readFile(".env", "utf8");
+	const lines = env.split("\n");
+	let tokenLineIndex = lines.findIndex((line) =>
+		line.startsWith("GOOGLE_OAUTH_TOKEN")
+	);
+	if (tokenLineIndex < 0) {
+		lines.push("");
+		tokenLineIndex = lines.length - 1;
+	}
+
+	lines[tokenLineIndex] = `GOOGLE_OAUTH_TOKEN=${JSON.stringify(token)}`;
+
+	await fs.promises.writeFile(".env", lines.join("\n"));
+	console.log("Token stored to .env");
 }
 
 doUploadVideo();
